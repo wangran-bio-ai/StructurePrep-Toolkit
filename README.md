@@ -15,11 +15,10 @@
 *   **`analysis_notebook.ipynb`**：👈 **重点！** 包含完整的踩坑复现、修复前后的对比图，以及最终的计算结果分析。
 
 ## 🚀 快速开始 (Quick Start)
+
 *(运行前请确保安装了相关的 Python 环境)*
 ```bash
 pip install -r requirements.txt
-python prep_complex.py -i example.pdb -o output/
-```
 
 ## 📊 结果展示 (Results)
 
