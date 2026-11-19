@@ -19,3 +19,6 @@
 ```bash
 pip install -r requirements.txt
 python prep_complex.py -i example.pdb -o output/
+Results
+<img width="1920" height="793" alt="image" src="https://github.com/user-attachments/assets/0d93f6f7-d5ce-4296-ba78-d659a243fb1b" />
+图 1：PyMOL 导出 Mol 格式导致配体（pNPB）芳香环和双键键级丢失（黄色为 PyMOL 导出，粉色为原始 SDF）。这会导致后续 MD 或 Docking 拓扑构建失败。
