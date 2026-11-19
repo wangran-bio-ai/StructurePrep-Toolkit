@@ -19,6 +19,7 @@
 *(运行前请确保安装了相关的 Python 环境)*
 ```bash
 pip install -r requirements.txt
+```
 
 ## 📊 结果展示 (Results)
 
