@@ -26,7 +26,21 @@ pip install -r requirements.txt
 
 #### 1. 配体拓扑丢失导致 MD 模拟灾难
 ![图 1：PyMOL 导出 Mol 格式导致配体芳香环和双键键级丢失](https://github.com/user-attachments/assets/0d93f6f7-d5ce-4296-ba78-d659a243fb1b)
-> **现象与排查**：在进行 GROMACS MD 模拟前，PyMOL 导出的 `pNPB.mol` 丢失了芳香环和双键的键级（黄色为错误导出，粉色为原始 SDF）。由于拓扑错误导致力场参数异常，配体在 10ns MD 模拟中迅速飘离结合口袋。这正是开发 `StructurePrep-Toolkit` 的核心动机。
+> **现象与排查**：在进行 GROMACS MD 模拟前，PyMOL 导出的 `pNPB.mol` 丢失了芳香环和双键的键级（黄色为错误导出，粉色为原始 SDF）。由于拓扑错误导致力场参数异常，配体在 10ns MD 模拟中迅速飘离结合口袋，这正是开发 `StructurePrep-Toolkit` 的核心动机。
+
+### 🔬 案例：hGAS41(20-145) 由于低溶解度需进行突变设计，疏水斑块分析得到双突变位点ILE21Thr & MET128SER，突变提FoldX热稳定性分析，GROMMACS模拟，计算RMSD和RMSF，虽然配体Kcr也出现拓扑学问题，单整体依旧结合在口袋，100ns稳定性较高。
+
+<img width="1429" height="706" alt="image" src="https://github.com/user-attachments/assets/890b4d75-bf92-4a7f-9450-32b74aae6b4c" />
+FoldX 计算hGAS41(20-145) ILE21Thr & MET128SER的ΔΔG = 0.221217，几乎没有破坏蛋白质的整体结构稳定性
+
+<img width="1230" height="700" alt="image" src="https://github.com/user-attachments/assets/84be34f7-82be-484e-9b1e-3966d776dc66" />
+图中hGAS41(20-145)WT（绿色）与Kcr（天蓝色）结合晶体解析图，hGAS41(20-145)ILE21Thr & MET128SER（粉色）和Kcr(蓝紫色）GROMACS模拟图对比
+
+<img width="645" height="393" alt="image" src="https://github.com/user-attachments/assets/a581fd37-187f-46ba-b35d-93be292a8c2f" />
+RMSD计算MD结果稳定，说明双突变可行
+
+<img width="796" height="425" alt="image" src="https://github.com/user-attachments/assets/3c4b61e4-9263-4773-98a2-c6a156b004de" />
+RMSF柔性区域与Pymol对比高度重合
 
 <br>
 
