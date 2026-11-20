@@ -1,3 +1,1 @@
-pyfoldx
-pandas
-numpy
+ FoldX/Rosetta/AutoDock/GROMACS（这三个是二进制/需编译）,Windows需用WSL搭建Linux环境，GROMACS过慢需要租GPU搭建环境操作。
