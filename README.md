@@ -36,7 +36,7 @@ pip install -r requirements.txt
 > **分析**：AutoDock Vina 预测 pNPB 配体进入 CALB 结合口袋，其**酯键**与催化三联体中的 **SER105** 距离约为 **3.2 Å**，处于理想的催化反应距离。
 
 #### 3. GROMACS 10ns MD 模拟后的真实构象
-<img width="1920" height="793" alt="image" src="https://github.com/user-attachments/assets/0503d39e-3200-4fd9-9dfb-14d9000f2217" />
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/0503d39e-3200-4fd9-9dfb-14d9000f2217" />
 
 
 > **分析**：经过 10ns MD 模拟后，提取距离最小的一帧显示，pNPB 的酯键与 SER105 的距离拉长至 **4.9 Å**，推测 mol 构象错误导致 AutoDock 结果不理想，后续需要继续验证。
