@@ -39,7 +39,7 @@ pip install -r requirements.txt
 
 #### 3. GROMACS 10ns MD 模拟后的真实构象
 <img width="800" alt="MD Results" src="https://github.com/user-attachments/assets/f2184013-b8cc-4596-b8b3-53f9fc4cc909" />
-> **分析**：经过 10ns MD 模拟后，提取距离最小的一帧显示，pNPB 的酯键与 SER105 的距离拉长至 **4.9 Å**。这表明在真实的溶剂环境和动态温度下，底物未能稳定保持在催化活性位点。这一发现为后续进行酶-底物亲和力改造（或底物通道优化）提供了明确的结构依据。
+> **分析**：经过 10ns MD 模拟后，提取距离最小的一帧显示，pNPB 的酯键与 SER105 的距离拉长至 **4.9 Å**，推测mol构象错误导致MD结果不理想，后续需要继续验证。
 
 <br>
 
