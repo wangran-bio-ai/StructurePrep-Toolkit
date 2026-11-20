@@ -42,19 +42,19 @@ pip install -r requirements.txt
 
 > **背景**：由于低溶解度需进行突变设计，疏水斑块分析得到双突变位点 **ILE21Thr & MET128SER**。结合 FoldX 热稳定性分析与 GROMACS 模拟，计算 RMSD 和 RMSF。虽然配体 Kcr 也出现拓扑学问题，但整体依旧结合在口袋，100ns 稳定性较高。
 
-**图 4：FoldX 热稳定性评估**
+#### 4：FoldX 热稳定性评估
 <img width="800" alt="FoldX ddG" src="https://github.com/user-attachments/assets/890b4d75-bf92-4a7f-9450-32b74aae6b4c" />
 > **分析**：FoldX 计算 hGAS41(20-145) ILE21Thr & MET128SER 的 \(\Delta\Delta G = 0.221\) kcal/mol，几乎没有破坏蛋白质的整体结构稳定性。
 
-**图 5：结构叠合对比**
+#### 5：结构叠合对比
 <img width="800" alt="结构叠合" src="https://github.com/user-attachments/assets/84be34f7-82be-484e-9b1e-3966d776dc66" />
 > **说明**：图中 hGAS41(20-145) WT（绿色）与 Kcr（天蓝色）结合晶体解析图，与 hGAS41(20-145) ILE21Thr & MET128SER（粉色）和 Kcr（蓝紫色）GROMACS 模拟图对比。
 
-**图 6：RMSD 分析**
+#### 6：RMSD 分析
 <img width="600" alt="RMSD" src="https://github.com/user-attachments/assets/a581fd37-187f-46ba-b35d-93be292a8c2f" />
 > **分析**：RMSD 计算 MD 结果稳定，说明双突变可行。
 
-**图 7：RMSF 分析**
+#### 7：RMSF 分析
 <img width="600" alt="RMSF" src="https://github.com/user-attachments/assets/3c4b61e4-9263-4773-98a2-c6a156b004de" />
 > **分析**：RMSF 柔性区域与 Pymol 对比高度重合。
 
@@ -65,10 +65,10 @@ pip install -r requirements.txt
 > **背景**：在 hYEATS2-BTN 结构基础上进行 FoldX PositionScan 饱和突变设计，提升结合亲和力，为胞内探针设计提供参考。
 
 #### FoldX 突变扫描与 Rosetta 交叉验证
-**图 8：FoldX 突变扫描结果** (展示 FoldX PositionScan 得到的 ddG 数值，用于评估突变对稳定性和亲和力的影响)
+#### 8：FoldX 突变扫描结果 (展示 FoldX PositionScan 得到的 ddG 数值，用于评估突变对稳定性和亲和力的影响)
 <img width="600" alt="FoldX Results" src="https://github.com/user-attachments/assets/ec3f833c-8080-43fd-bfac-50f1457414c7" />
 
 <br>
 
-**图 9：Rosetta 模拟结果** (展示 Rosetta 计算的能量分数，与 FoldX 结果形成交叉验证)
+#### 9：Rosetta 模拟结果 (展示 Rosetta 计算的能量分数，与 FoldX 结果形成交叉验证)
 <img width="500" alt="Rosetta Results" src="https://github.com/user-attachments/assets/deacaf32-366e-4ceb-9729-a3b249355911" />
