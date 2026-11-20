@@ -23,4 +23,16 @@ pip install -r requirements.txt
 
 ## 📊 结果展示 (Results)
 
-![图 1：PyMOL 导出 Mol 格式导致配体（pNPB）芳香环和双键键级丢失（黄色为 PyMOL 导出，粉色为原始 SDF）。这会导致后续 MD 或 Docking 拓扑构建失败。](https://github.com/user-attachments/assets/0d93f6f7-d5ce-4296-ba78-d659a243fb1b)
+![图 1：PyMOL 导出 Mol 格式导致配体芳香环和双键键级丢失（黄色为 PyMOL 导出，粉色为原始 SDF）。这会导致后续 MD 或 Docking 拓扑构建失败。](https://github.com/user-attachments/assets/0d93f6f7-d5ce-4296-ba78-d659a243fb1b)
+
+<br>
+
+**图 2：FoldX 突变扫描结果** (展示 FoldX PositionScan 得到的 ddG 数值，用于评估突变对稳定性和亲和力的影响)
+
+<img width="685" height="280" alt="FoldX Results" src="https://github.com/user-attachments/assets/ec3f833c-8080-43fd-bfac-50f1457414c7" />
+
+<br>
+
+**图 3：Rosetta 模拟结果** (展示 Rosetta 计算的能量分数，与 FoldX 结果形成交叉验证)
+
+<img width="525" height="195" alt="Rosetta Results" src="https://github.com/user-attachments/assets/deacaf32-366e-4ceb-9729-a3b249355911" />
