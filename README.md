@@ -18,7 +18,11 @@
 ```bash
 pip install -r requirements.txt
 ```
-
+### 系统依赖（需自行安装，无 pip 源）
+- FoldX 5（学术免费，foldxsuite.crg.eu 注册下载）
+- Rosetta 3.x/4.x（学术免费，rosettacommons.org，需编译）
+- GROMACS 2024+（conda install -c conda-forge gromacs）
+- 配体参数化：ACPYPE + AmberTools
 ---
 
 ## 📊 结果展示 (Results)
