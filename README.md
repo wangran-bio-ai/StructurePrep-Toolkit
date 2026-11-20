@@ -36,9 +36,12 @@ pip install -r requirements.txt
 > **分析**：AutoDock Vina 预测 pNPB 配体进入 CALB 结合口袋，其**酯键**与催化三联体中的 **SER105** 距离约为 **3.2 Å**，处于理想的催化反应距离。
 
 #### 3. GROMACS 10ns MD 模拟后的真实构象
-<img width="800" alt="MD Results" src="https://github.com/user-attachments/assets/f2184013-b8cc-4596-b8b3-53f9fc4cc909" />
+<img width="1920" height="793" alt="image" src="https://github.com/user-attachments/assets/0503d39e-3200-4fd9-9dfb-14d9000f2217" />
+
 
 > **分析**：经过 10ns MD 模拟后，提取距离最小的一帧显示，pNPB 的酯键与 SER105 的距离拉长至 **4.9 Å**，推测 mol 构象错误导致 AutoDock 结果不理想，后续需要继续验证。
+
+> **结论**：PyMOL 导出丢失键级 → 对接输入化学错误 → MD 中底物飘离口袋。
 
 
 ### 🔬 案例 2：hGAS41(20-145) 低溶解度突变设计与 MD 验证
@@ -75,7 +78,6 @@ pip install -r requirements.txt
 #### 8：FoldX 突变扫描结果 (展示 FoldX PositionScan 得到的 ddG 数值，用于评估突变对稳定性和亲和力的影响)
 <img width="600" alt="FoldX Results" src="https://github.com/user-attachments/assets/ec3f833c-8080-43fd-bfac-50f1457414c7" />
 
-
 <br>
 
 #### 9：Rosetta 模拟结果 (展示 Rosetta 计算的能量分数，与 FoldX 结果形成交叉验证)
@@ -84,4 +86,6 @@ pip install -r requirements.txt
 <br>
 
 #### 10：FoldX/Rosetta 结果汇总 (展示 Rosetta 计算的能量分数，与 FoldX 结果形成交叉验证)
-<img width="1149" height="155" alt="image" src="https://github.com/user-attachments/assets/235e4054-5a88-4e13-835a-81744c3a0d4c" />
+<img width="983" height="226" alt="image" src="https://github.com/user-attachments/assets/14cbad28-39be-470e-8451-d13910f616db" />
+
+> **注意**：WT 参照（dG_WT=−13.64 REU），方法误差范围（FoldX ±0.5 / Rosetta ±1 kcal/mol ）
