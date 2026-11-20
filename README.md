@@ -27,17 +27,18 @@ pip install -r requirements.txt
 
 #### 1. 配体拓扑丢失导致 MD 模拟灾难
 ![图 1：PyMOL 导出 Mol 格式导致配体芳香环和双键键级丢失](https://github.com/user-attachments/assets/0d93f6f7-d5ce-4296-ba78-d659a243fb1b)
-br>
-现象与排查：在进行 GROMACS MD 模拟前，PyMOL 导出的 `pNPB.mol` 丢失了芳香环和双键的键级（黄色为错误导出，粉色为原始 SDF）。由于拓扑错误导致力场参数异常，配体在 10ns MD 模拟中迅速飘离结合口袋，这正是开发 `StructurePrep-Toolkit` 的核心动机。
+
+> **现象与排查**：：在进行 GROMACS MD 模拟前，PyMOL 导出的 `pNPB.mol` 丢失了芳香环和双键的键级（黄色为错误导出，粉色为原始 SDF）。由于拓扑错误导致力场参数异常，配体在 10ns MD 模拟中迅速飘离结合口袋，这正是开发 `StructurePrep-Toolkit` 的核心动机。
 
 #### 2. AutoDock Vina 初始对接结果
 <img width="800" alt="Autodock Vina Results" src="https://github.com/user-attachments/assets/b08e5590-a71f-4d34-994f-7881005afa4e" />
+
 > **分析**：AutoDock Vina 预测 pNPB 配体进入 CALB 结合口袋，其**酯键**与催化三联体中的 **SER105** 距离约为 **3.2 Å**，处于理想的催化反应距离。
 
 #### 3. GROMACS 10ns MD 模拟后的真实构象
 <img width="800" alt="MD Results" src="https://github.com/user-attachments/assets/f2184013-b8cc-4596-b8b3-53f9fc4cc909" />
-br>
-分析：经过 10ns MD 模拟后，提取距离最小的一帧显示，pNPB 的酯键与 SER105 的距离拉长至 **4.9 Å**，推测 mol 构象错误导致 AutoDock 结果不理想，后续需要继续验证。
+
+> **分析**：经过 10ns MD 模拟后，提取距离最小的一帧显示，pNPB 的酯键与 SER105 的距离拉长至 **4.9 Å**，推测 mol 构象错误导致 AutoDock 结果不理想，后续需要继续验证。
 
 
 ### 🔬 案例 2：hGAS41(20-145) 低溶解度突变设计与 MD 验证
@@ -46,18 +47,22 @@ br>
 
 #### 4：FoldX 热稳定性评估
 <img width="800" alt="FoldX ddG" src="https://github.com/user-attachments/assets/890b4d75-bf92-4a7f-9450-32b74aae6b4c" />
+
 > **分析**：FoldX 计算 hGAS41(20-145) ILE21Thr & MET128SER 的 \(\Delta\Delta G = 0.221\) kcal/mol，几乎没有破坏蛋白质的整体结构稳定性。
 
 #### 5：结构叠合对比
 <img width="800" alt="结构叠合" src="https://github.com/user-attachments/assets/84be34f7-82be-484e-9b1e-3966d776dc66" />
+
 > **说明**：图中 hGAS41(20-145) WT（绿色）与 Kcr（天蓝色）结合晶体解析图，与 hGAS41(20-145) ILE21Thr & MET128SER（粉色）和 Kcr（蓝紫色）GROMACS 模拟图对比。
 
 #### 6：RMSD 分析
 <img width="600" alt="RMSD" src="https://github.com/user-attachments/assets/a581fd37-187f-46ba-b35d-93be292a8c2f" />
+
 > **分析**：RMSD 计算 MD 结果稳定，说明双突变可行。
 
 #### 7：RMSF 分析
 <img width="600" alt="RMSF" src="https://github.com/user-attachments/assets/3c4b61e4-9263-4773-98a2-c6a156b004de" />
+
 > **分析**：RMSF 柔性区域与 Pymol 对比高度重合。
 
 ---
