@@ -88,7 +88,7 @@ pip install -r requirements.txt
 
 <br>
 
-#### 10：FoldX/Rosetta 结果汇总 (展示 Rosetta 计算的能量分数，与 FoldX 结果形成交叉验证)
+#### 10：双引擎 ΔΔG 汇总与最终判定
 <img width="800" alt="FoldX ddG" src="https://github.com/user-attachments/assets/75fd2a46-9a8d-4f0f-8d0d-4cfe77d34cab" />
 
 > **注意**：WT 参照（dG_WT=−13.64 REU），方法误差范围（FoldX ±0.5 / Rosetta ±1 kcal/mol ）
