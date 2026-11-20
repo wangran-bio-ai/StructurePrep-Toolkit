@@ -27,7 +27,7 @@ pip install -r requirements.txt
 
 #### 1. 配体拓扑丢失导致 MD 模拟灾难
 ![图 1：PyMOL 导出 Mol 格式导致配体芳香环和双键键级丢失](https://github.com/user-attachments/assets/0d93f6f7-d5ce-4296-ba78-d659a243fb1b)
-br
+br>
 现象与排查：在进行 GROMACS MD 模拟前，PyMOL 导出的 `pNPB.mol` 丢失了芳香环和双键的键级（黄色为错误导出，粉色为原始 SDF）。由于拓扑错误导致力场参数异常，配体在 10ns MD 模拟中迅速飘离结合口袋，这正是开发 `StructurePrep-Toolkit` 的核心动机。
 
 #### 2. AutoDock Vina 初始对接结果
@@ -36,7 +36,8 @@ br
 
 #### 3. GROMACS 10ns MD 模拟后的真实构象
 <img width="800" alt="MD Results" src="https://github.com/user-attachments/assets/f2184013-b8cc-4596-b8b3-53f9fc4cc909" />
-> **分析**：经过 10ns MD 模拟后，提取距离最小的一帧显示，pNPB 的酯键与 SER105 的距离拉长至 **4.9 Å**，推测 mol 构象错误导致 AutoDock 结果不理想，后续需要继续验证。
+br>
+分析：经过 10ns MD 模拟后，提取距离最小的一帧显示，pNPB 的酯键与 SER105 的距离拉长至 **4.9 Å**，推测 mol 构象错误导致 AutoDock 结果不理想，后续需要继续验证。
 
 
 ### 🔬 案例 2：hGAS41(20-145) 低溶解度突变设计与 MD 验证
