@@ -4,7 +4,7 @@
 在计算生物学（如 AutoDock 对接、GROMACS MD 模拟、FoldX 能量计算）中，结构文件的格式缺陷常常导致致命错误。本项目提供了一套轻量级的 Python 处理流程，用于解决真实世界 PDB 数据中的常见坑点，保障下游计算（如稳定性改造、亲和力预测）的准确性。
 
 ## ⚠️ 解决的核心痛点 (Problems Solved)
-- **配体拓扑丢失（环断裂）**：PyMOL 导出的 `.mol` 文件在进入 AutoDock 或 GROMACS 时经常发生芳香环键级错误，导致对接出错甚至模拟崩溃。本项目使用 ACPYPE 进行了自动化拓扑重构，确保模拟正确。
+- **配体拓扑丢失（环断裂）**：PyMOL 导出的 `.mol` 文件在进入 AutoDock 或 GROMACS 时经常发生芳香环键级错误，导致对接出错甚至模拟崩溃。提供 ACPYPE 参数化的标准修复流程，确保模拟正确。
 - **FoldX 忽略配体**：FoldX 严格要求 PDB 格式，包含配体（如 BTN、Kcr）的复合物直接输入常导致配体被静默丢弃。本项目开发了自动化脚本，精准分离蛋白与配体，确保结合能计算的准确性。
 - **自动化流程**：将繁琐的命令行手动操作封装为 Python 脚本，减少人为错误，提高蛋白工程改造的效率。
 
@@ -90,6 +90,8 @@ pip install -r requirements.txt
 <br>
 
 #### 10：FoldX/Rosetta 结果汇总 (展示 Rosetta 计算的能量分数，与 FoldX 结果形成交叉验证)
-<img width="800" alt="image" src="https://github.com/user-attachments/assets/14cbad28-39be-470e-8451-d13910f616db" />
+<img width="800" alt="FoldX ddG" src="https://github.com/user-attachments/assets/75fd2a46-9a8d-4f0f-8d0d-4cfe77d34cab" />
 
 > **注意**：WT 参照（dG_WT=−13.64 REU），方法误差范围（FoldX ±0.5 / Rosetta ±1 kcal/mol ）
+
+#### 局限与展望：突变体 MD 验证与 ITC 实验验证
