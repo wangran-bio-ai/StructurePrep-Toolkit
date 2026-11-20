@@ -32,7 +32,7 @@ pip install -r requirements.txt
 #### 1. PyMOL 导出 Mol 格式配体芳香环键级与双键丢失等拓扑错误导致 MD 模拟灾难
 <img width="800" alt="PyMol Results" src="https://github.com/user-attachments/assets/0d93f6f7-d5ce-4296-ba78-d659a243fb1b" />
 
-> **现象与排查**：：在进行 GROMACS MD 模拟前，PyMOL 导出的 `pNPB.mol` 丢失了芳香环和双键的键级（黄色为错误导出，粉色为原始 SDF）。由于拓扑错误导致力场参数异常，配体在 10ns MD 模拟中迅速飘离结合口袋，这正是开发 `StructurePrep-Toolkit` 的核心动机。
+> **现象与排查**：在进行 GROMACS MD 模拟前，PyMOL 导出的 `pNPB.mol` 丢失了芳香环和双键的键级（黄色为错误导出，粉色为原始 SDF）。由于拓扑错误导致力场参数异常，配体在 10ns MD 模拟中迅速飘离结合口袋，这正是开发 `StructurePrep-Toolkit` 的核心动机。
 
 #### 2. AutoDock Vina 初始对接结果
 <img width="800" alt="Autodock Vina Results" src="https://github.com/user-attachments/assets/b08e5590-a71f-4d34-994f-7881005afa4e" />
@@ -78,7 +78,6 @@ pip install -r requirements.txt
 
 > **背景**：在 hYEATS2-BTN 结构基础上进行 FoldX PositionScan 饱和突变设计，提升结合亲和力，为胞内探针设计提供参考。
 
-#### FoldX 突变扫描与 Rosetta 交叉验证
 #### 8：FoldX 突变扫描结果 (展示 FoldX PositionScan 得到的 ddG 数值，用于评估突变对稳定性和亲和力的影响)
 <img width="600" alt="FoldX Results" src="https://github.com/user-attachments/assets/ec3f833c-8080-43fd-bfac-50f1457414c7" />
 
@@ -97,3 +96,4 @@ pip install -r requirements.txt
 ---
 
 ### 🔬 局限与展望：突变体 MD 验证与 ITC 实验验证
+> 三个候选突变体的短程 MD 稳定性验证与 ITC 结合亲和力测定为后续工作；本工具包提供的 Rosetta/FoldX 流程可直接复用于突变体评估。
