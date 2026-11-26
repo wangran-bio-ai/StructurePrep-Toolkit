@@ -1,0 +1,61 @@
+# ===== 数据保护：晶体结构与 MD 原始数据一律不入库 =====
+*.pdb
+*.cif
+*.mmcif
+*.ent
+
+# 轨迹
+*.xtc
+*.trr
+*.tng
+*.dcd
+*.nc
+
+# 拓扑与坐标
+*.tpr
+*.gro
+*.top
+*.itp
+*.ndx
+*.prmtop
+*.inpcrd
+*.mol2
+*.sdf
+*.lib
+*.frcmod
+
+# 运行时输出
+*.edr
+*.cpt
+*.log
+*.out
+*.xvg
+*.dat
+
+# 参数化中间产物
+*.acpype/
+*.AC
+*.INF
+*.pkl
+sqm.*
+
+# 环境与缓存
+env/
+.pytest_cache/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# ===== results/：只放汇总表与图 =====
+results/**/*.csv
+!results/**/metrics.csv
+!results/**/ranking.csv
+!results/**/summary_*.csv
+
+# ===== data/：默认整体不入库（晶体数据未发表，论文发表后再放）=====
+# 解禁：删掉下面这块，或按文件逐条放行
+data/**
+!data/README.md
+!data/.gitkeep
+!data/structures/.gitkeep
+!data/trajectories/.gitkeep
