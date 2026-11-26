@@ -85,7 +85,8 @@ ANALYSIS/
 ├── pipeline/       五阶段入口脚本
 ├── notebooks/      MD_pipeline / ligand_param / Analysis_notebook
 ├── scripts/        analysis_agent、hbond_geometric、环境安装
-└── results/        汇总表与图（无原始数据）
+├── results/        汇总表与图（无原始数据）
+└── legacy/         历史内容归档（FoldX/Rosetta 旧流程、原始 GROMACS notebook）
 ```
 
 > **`data/` 现在是空的占位目录**：晶体结构属未发表数据，论文发表前不公开。解禁步骤见 `data/README.md`。
