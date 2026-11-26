@@ -1,1 +1,8 @@
- FoldX/Rosetta/AutoDock/GROMACS（这三个是二进制/需编译）,Windows需用WSL搭建Linux环境，GROMACS过慢需要租GPU搭建环境操作。
+﻿# 运行环境（推荐 conda/micromamba）
+#   micromamba create -p ./env -c conda-forge python=3.11 numpy pandas matplotlib
+numpy>=1.24
+pandas>=2.0
+matplotlib>=3.7
+# 可选：配体参数化（AmberTools + ACPYPE + OpenBabel）
+#   micromamba install -p ./env -c conda-forge ambertools acpype openbabel
+# GROMACS：scripts/install_gromacs.sh（CPU）或 scripts/install_gromacs_cuda.sh（GPU）
