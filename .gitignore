@@ -51,6 +51,8 @@ results/**/*.csv
 !results/**/metrics.csv
 !results/**/ranking.csv
 !results/**/summary_*.csv
+!results/**/metrics_w50_100.csv
+!results/**/comparison_w50_100.csv
 
 # ===== data/：默认整体不入库（晶体数据未发表，论文发表后再放）=====
 # 解禁：删掉下面这块，或按文件逐条放行
