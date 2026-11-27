@@ -2,136 +2,75 @@
 
 # StructurePrep-Toolkit
 
-**从晶体结构到可解释的 MD：蛋白–多肽/配体复合物的结构准备、模拟与界面分析流水线**
+**蛋白–多肽复合物的 MD 全流程工具：结构准备 → 参数化 → 模拟 → 界面分析 → 可解释的报告**
 
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![GROMACS](https://img.shields.io/badge/GROMACS-2024.4-orange.svg)](https://www.gromacs.org/)
-[![Amber](https://img.shields.io/badge/ff-amber99sb--ildn%20%2F%20GAFF2-green.svg)]()
-[![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](LICENSE)
+[![force field](https://img.shields.io/badge/ff-amber99sb--ildn%20%7C%20GAFF2-3c8d3c.svg)]()
+[![python](https://img.shields.io/badge/python-3.10%2B-3776ab.svg)](https://www.python.org/)
+[![license](https://img.shields.io/badge/license-see%20LICENSING-lightgrey.svg)](LICENSING.md)
 
 <p align="center">
-  <img src="results/figs/contacts_compare.png" width="820">
+  <img src="results/figs/contacts_compare.png" width="860">
   <br>
-  <em>逐残基接触占时率：四个点突变都没有"减少"界面接触，而是让多肽沿结合沟槽重排</em>
+  <em>五个变体的逐残基接触占时率。四个点突变都没有"减少"界面接触，而是让多肽沿结合沟槽重排。</em>
 </p>
 
 </div>
 
 ---
 
-## 目录
+## 它解决什么问题
 
-- [这是什么](#这是什么)
-- [新闻与状态](#新闻与状态)
-- [流水线总览](#流水线总览)
-- [安装](#安装)
-- [快速开始](#快速开始)
-- [输出结构](#输出结构)
-- [结果](#结果)
-- [怎么读这些数字](#怎么读这些数字)
-- [仓库结构](#仓库结构)
-- [扩展到自己的体系](#扩展到自己的体系)
-- [引用与许可](#引用与许可)
+做蛋白–多肽 MD，真正卡住人的往往不是 `gmx mdrun`，而是下面三件事：
+
+1. **配体参数化**：共价修饰的肽（如生物素化赖氨酸）拆成"蛋白 + 小分子"就再也连不回去；ACPYPE 也不会替你猜键级。
+2. **体系与环境的坑**：盒子选立方盒白装 40% 的水；换台机器 `gmx` 直接 `Illegal instruction`；`-nsteps` 续跑是累加而非绝对值。
+3. **结果怎么读**：接触数掉了 17% 到底算"结合变弱"还是"换了个姿态"？MM/GBSA 给出 −2 kcal/mol 能不能写进论文？
+
+本工具把这三件事拆成**有明确通过判据的阶段**，并且把"什么能说、什么不能说"写进文档，而不是留给你自己猜。
 
 ---
 
-## 这是什么
+## 状态
 
-本工具把「晶体结构 → 可运行的 MD 体系 → 可解释的界面指标」这条链路拆成 **5 个有明确通过判据的阶段**，
-每一步都有对应的脚本、notebook 与判读依据，避免"跑完一堆模拟但不知道怎么下结论"。
-
-针对的场景：**蛋白与多肽（含共价修饰，如生物素化赖氨酸）的界面**，也适用于小分子配体的常规 MD 准备。
-
----
-
-## 新闻与状态
-
-| 日期 | 内容 |
+| 项目 | 状态 |
 |---|---|
-| 2026-11-27 | 新增 `contacts_agent.py`（逐残基接触 + 肽滑移）与 `mmpbsa_agent.py`（MM/GBSA），含配套 notebook |
-| 2026-11-27 | 五变体（WT / Y262A / W282A / E284P / S261E）100 ns 全部完成并分析 |
-| 2026-11-27 | **R279E 正在运行**（100 ns，预计当日完成），结果将并入下方表格 |
-| 2026-11-26 | 仓库重构为流水线框架；移除结构文件与大体积视频；历史重建 |
-
-> **数据政策**：本仓库**不包含**任何晶体结构、轨迹或拓扑文件。`data/` 为空占位，待论文发表后按 `data/README.md` 解禁。
-
----
-
-## 流水线总览
-
-```mermaid
-flowchart LR
-    A[01 结构准备<br/>拆链/去水/断点检查] --> B[02 配体参数化<br/>GAFF2 + AM1-BCC]
-    B --> C[03 体系搭建<br/>pdb2gmx/盒子/溶剂化/离子]
-    C --> D[04 平衡与生产<br/>EM → NVT → NPT → 100 ns]
-    D --> E[05 界面分析<br/>结构指标 / 接触 / MM-GBSA]
-    E --> F[报告<br/>表格 + 图 + 判读边界]
-```
-
-| 阶段 | 入口 | 通过判据 |
-|---|---|---|
-| 01 结构准备 | `pipeline/01_prepare.sh` | 0 断点、0 缺原子、非标准残基清单明确 |
-| 02 配体参数化 | `notebooks/ligand_param.ipynb` | 原子数、电荷和 = 净电荷、残基名一致 |
-| 03 体系搭建 | `notebooks/MD_pipeline.ipynb` | `Total charge` 对账；水数×3 + 溶质 = gro 原子数 |
-| 04 平衡与生产 | `pipeline/04_run.sh` | EM `Fmax<1000`；NVT ±5 K；NPT 密度 ≈1000 kg/m³ |
-| 05 界面分析 | `scripts/analysis_agent.py` | 接触占时比、buried SASA、候选氢键、完整性排序 |
-
----
-
-## 安装
-
-```bash
-# 推荐：conda / micromamba（CPU 版 GROMACS + AmberTools + ACPYPE）
-micromamba create -p ./env -c conda-forge python=3.11 numpy pandas matplotlib \
-    gromacs=2024.4 ambertools acpype openbabel
-micromamba activate ./env
-
-# 生产用：源码编译 CUDA 版（自动固定 AVX2 SIMD，避免换机器 Illegal instruction）
-bash scripts/install_gromacs_cuda.sh
-```
-
-系统依赖：GROMACS ≥ 2021（实测 2024.4）、AmberTools（MM/PBSA、antechamber）、ACPYPE、OpenBabel。
+| 五变体（WT / Y262A / W282A / E284P / S261E） | ✅ 100 ns 完成，已出表与图 |
+| 第六变体 **R279E** | ⏳ 生产接近完成（~95/100 ns），完成后自动并入 |
+| MM/GBSA | ✅ 三变体完成（WT / Y262A / S261E） |
+| 逐残基接触 + 肽滑移 | ✅ 五变体完成 |
+| 结构文件与轨迹 | ❌ **不在仓库内**（未发表数据，见 `data/README.md`） |
 
 ---
 
 ## 快速开始
 
 ```bash
-# 1) 建体系（EM → NVT → NPT → 生产）
-python3 notebooks/MD_pipeline.ipynb      # 或 pipeline/01→04 逐段跑
+# 环境（CPU 版够跑通；生产请看 scripts/install_gromacs_cuda.sh）
+micromamba create -p ./env -c conda-forge python=3.11 numpy pandas matplotlib \
+    gromacs=2024.4 ambertools acpype openbabel
+micromamba activate ./env
 
-# 2) 结构指标：一次算完所有变体并排序
+# 建体系：EM → NVT → NPT → 生产
+jupyter lab notebooks/MD_pipeline.ipynb
+
+# 结构指标：一次算完所有变体并排序
 python3 scripts/analysis_agent.py WT Y262A W282A --ref WT
 
-# 3) 逐残基接触：判断"界面被破坏"还是"被重排"
+# 逐残基接触：判断"破坏"还是"重排"
 python3 scripts/contacts_agent.py WT Y262A W282A --ref WT
 
-# 4) MM/GBSA：给 ΔΔG 的方向
+# MM/GBSA：给 ΔΔG 方向
 python3 scripts/mmpbsa_agent.py WT Y262A --ref WT
 ```
 
-三类分析都是**幂等 + 可复用**：`--reuse` 会跳过已算过的步骤，秒级出表。
-
----
-
-## 输出结构
-
-```
-ANALYSIS/
-├── <V>/summary.csv              单变体全指标
-├── <V>/figs/01–05*.png          稳定性/结合保持/距离/埋藏面积/氢键
-├── <V>/contacts/                逐残基接触与肽滑移
-├── comparison/                  多变体对比（metrics/ranking/figs）
-├── contacts_compare.png         逐残基接触差
-├── peptide_motion.png           肽滑移与取向
-└── mmpbsa_summary.csv / bar.png MM-GBSA 汇总
-```
+三个分析脚本都是幂等的：`--reuse` 复用已有结果，秒级出表。
 
 ---
 
 ## 结果
 
-### 1. 界面完整性（0–50 ns，相对 WT 归一化）
+### 1 界面是否保持（0–50 ns）
 
 <!-- RESULTS:START -->
 | variant | window_ns | n_contacts_mean | candidate_hbonds_mean | buried_sasa_mean_nm2 | pep_rmsd_median_nm |
@@ -141,98 +80,147 @@ ANALYSIS/
 | W282A | 50 | 421.0 | 8.89 | 9.64 | 0.293 |
 | E284P | 50 | 459.0 | 9.33 | 9.97 | 0.310 |
 | S261E | 50 | 471.4 | 9.81 | 10.29 | 0.202 |
-| R279E | 50 | *(running)* | — | — | — |
+| R279E | *(running)* | — | — | — | — |
 <!-- RESULTS:END -->
 
-<p align="center">
-  <img src="results/figs/interface_ranking.png" width="820">
-  <br>
-  <em>接触变化 / 候选氢键变化 / 界面完整性</em>
-</p>
+- 所有变体的接触占时比均为 **100%**：80–100 ns 内没有解离事件
+- 肽位移一律用**中位数**（周期性边界跳变会伪造 8–12 nm 的假峰，占总帧数 27–70%）
 
-### 2. 界面重排（逐残基接触）
+### 2 界面是"被破坏"还是"被重排"
 
-| 变体 | 总接触占时率 | 核心残基(>0.5) | 肽质心滑移 | 界面模式 |
+| 变体 | 总接触占时率 | 核心残基(>0.5) | 肽质心滑移 | 接触转移方向 |
 |---|---|---|---|---|
-| WT | 15.79 | 16 | 0.20 nm | 基准 |
+| WT | 15.79 | 16 | 0.20 nm | — |
 | Y262A | 15.80 (+0.1%) | 16 | 0.17 nm | Pro286/Leu258 → Trp234/Ser230 |
 | S261E | 15.05 (−4.7%) | 16 | 0.21 nm | Pro286/Leu258 → Pro264/Arg279 |
 | W282A | 14.48 (−8.3%) | 13 | 0.29 nm | 重排 + 轻度减少 |
 | E284P | 14.66 (−7.2%) | 13 | 0.22 nm | 重排 + 轻度减少 |
-| R279E | *(running)* | — | — | — |
 
-<p align="center">
-  <img src="results/figs/peptide_motion.png" width="820">
-  <br>
-  <em>左：肽质心相对蛋白的滑移（已做叠合去整体漂移）；右：N端→C端向量转角（受内部柔性支配，仅作参考）</em>
-</p>
+<p align="center"><img src="results/figs/peptide_motion.png" width="860"></p>
 
-### 3. MM/GBSA（单轨迹，GB igb=5，125 帧，50–100 ns）
+**结论**：总量只差 0–8%，但逐残基差 Σ|Δ| ≈ 3.6–4.1，质心滑移 <0.3 nm
+→ 变化是**界面内接触的重新分配**，不是肽跑掉。
+
+### 3 MM/GBSA（单轨迹，GB igb=5，125 帧，50–100 ns）
 
 | 变体 | ΔVDW | ΔEEL | ΔEGB | ΔESURF | ΔG_bind | ΔΔG vs WT |
 |---|---|---|---|---|---|---|
 | WT | −43.6 | −50.7 | +60.0 | −6.0 | −40.3 ± 1.5 | — |
 | Y262A | −47.7 | −54.4 | +66.4 | −6.6 | −42.3 ± 0.5 | **−2.1 ± 1.5** |
 | S261E | −46.9 | −141.3 | +144.4 | −6.8 | −50.6 ± 0.9 | −10.3 ± 1.7 |
-| R279E | *(running)* | — | — | — | — | — |
 
-（单位 kcal/mol，±SEM）
+<p align="center"><img src="results/figs/mmpbsa_bar.png" width="720"></p>
 
-<p align="center">
-  <img src="results/figs/mmpbsa_bar.png" width="700">
-</p>
+- ΔEEL 与 ΔEGB **大幅抵消**（WT：−51 / +60；S261E：−141 / +144）——单独引用 ΔEEL 会得出荒谬结论
+- Y262A 的 ΔΔG 在噪声内 → "结合姿态下的相互作用能相当"，与"重排"结论自洽
 
-> **注意**：ΔEEL 与 ΔEGB 必须成对引用。单轨迹 + 隐式溶剂 + 无熵项 → 只能比 ΔΔG 的方向，
-> 绝对值（−40 kcal/mol）没有物理意义。详见 [`docs/metrics_guide.md`](docs/metrics_guide.md)。
+### 4 结构、能量与实验的关系
 
-### 4. 结构层面 vs 实验
-
-| 层面 | 观察 | 说明 |
+| 层面 | 观察到 | 说明 |
 |---|---|---|
-| 结构 | 四个突变体总接触变化 ≤8%，但逐残基 Σ\|Δ\| ≈ 3.6–4.1 | **重排**，不是破坏 |
-| 能量 | Y262A ΔΔG = −2.1 kcal/mol（噪声内） | 结合姿态下相互作用能相当 |
-| 实验 | ITC：Y262A 不结合 | **界面重排不足以解释**，更可能来自解离动力学/构象选择 |
+| 结构 | 重排而非塌陷 | 接触总量不变，位置换了 |
+| 能量 | Y262A ΔΔG ≈ −2 kcal/mol | 结合姿态下相互作用能相当 |
+| 实验（ITC） | Y262A 不结合 | **重排不足以解释**，更可能来自解离动力学/构象选择 |
 
-**结论口径**：MD 说明"界面结构如何变化"，亲和力强弱由 ITC 判定；两者互补，不互相替代。
-要拿到可与 ITC 对话的数值，需要伞形采样 PMF（ΔG_off）或 alchemical FEP（ΔΔG）。
+> 本工具体系能回答"界面结构如何变化"，**不回答"亲和力多强"**。要拿到可与 ITC 对话的数值，
+> 需要伞形采样 PMF（ΔG_off）或 alchemical FEP（ΔΔG）。
 
 ---
 
-## 怎么读这些数字
+## 方法：五个阶段与通过判据
 
-详见 [`docs/metrics_guide.md`](docs/metrics_guide.md)。三条最容易踩的边界：
+| 阶段 | 做什么 | 通过判据 | 入口 |
+|---|---|---|---|
+| 01 结构准备 | 拆链、去水、断点/缺原子检查、突变体建模 | 0 断点、0 缺原子、非标准残基清单明确 | `pipeline/01_prepare.sh` |
+| 02 配体参数化 | GAFF2 + AM1-BCC；共价修饰肽**整体**参数化 | 原子数 / 电荷和 = 净电荷 / 残基名一致 | `notebooks/ligand_param.ipynb` |
+| 03 体系搭建 | pdb2gmx → 拼 itp → 盒子 → 溶剂化 → 离子 | `Total charge` 对账；水数×3+溶质 = gro 原子数 | `notebooks/MD_pipeline.ipynb` |
+| 04 平衡与生产 | EM → NVT(100 ps) → NPT(100 ps) → 100 ns | EM `Fmax<1000`；NVT ±5 K；NPT 密度 ≈1000 kg/m³ | `pipeline/04_run.sh` |
+| 05 界面分析 | 结构指标 → 逐残基接触 → MM/GBSA | 见下节"三条判读边界" | `scripts/*_agent.py` |
 
-1. **接触占时比 100% ≠ 结合强**：50 ns 看不到 ms 级的解离事件。
-2. **结构指标分不出高低时，别继续换指标**：应转向能量学（MM/GBSA → PMF/FEP）。
-3. **平均值会被周期性边界跳变污染**：肽位移必须用中位数，并记录剔除帧数。
+**这类体系的默认选择**（都是实测对比后定的，不是照抄教程）：
+
+| 项 | 默认 | 理由 |
+|---|---|---|
+| 盒子 | `-bt dodecahedron -d 1.1` | 同等最小镜像距离下比立方盒省 ~30% 水；**但跨变体比较必须用同一种盒子** |
+| 力场 | `amber99sb-ildn` + `tip3p` | 与 GAFF2 的 comb-rule/fudge 匹配；GROMACS 2024.4 不带 amber14sb.ff |
+| 离子 | `-neutral -conc 0.15` | 跨变体必须同浓度，否则静电屏蔽不可比 |
+| 线程 | 按 `cgroup` 配额，不按 `nproc` | 容器里 `nproc` 常返回宿主核数（96 vs 12） |
+
+---
+
+## 三条判读边界（本项目踩过的坑）
+
+1. **接触占时比 100% ≠ 结合强**
+   五肽的 off-rate 对应 ms 级驻留，50 ns 短了 4–6 个数量级。看不到解离是必然的。
+
+2. **结构指标分不出高低时，别继续换定义**
+   Y262A 与 W282A 的界面完整性只差 0.8 个百分点——这已经是噪声，继续调阈值只是过拟合。
+
+3. **平均值会被周期性边界跳变污染**
+   肽位移出现 8–12 nm 尖峰的帧占 27–70%，必须用中位数；MM/GBSA 的轨迹还必须先 `-pbc nojump`
+   （否则配体被成像到盒子另一侧，ΔG 直接变 ≈0）。
+
+另外两个纯工程坑：
+- `-nsteps` 在续跑时是**累加**：cpt 在 5,000,000 步时给 `-nsteps 25000000`，终点是 30,000,000。
+- 编译时若不固定 `-DGMX_SIMD=AVX2_256`，换一台 CPU 就 `Illegal instruction`。
+
+---
+
+## 验证与自检清单
+
+每个阶段跑完都该过一遍（`docs/` 里有详细版）：
+
+- [ ] `gmx pdb2gmx` 打印的 `Total charge` 与手工估算一致（HIS 质子化态是常见偏差源）
+- [ ] `solv.gro` 第二行原子数 = 溶质原子 + 3×水分子数
+- [ ] EM 收敛且 `Maximum force < 1000 kJ/mol/nm`
+- [ ] NVT 平均温度在 ±5 K 内；NPT 密度 1000 ± 10 kg/m³
+- [ ] 轨迹的 `Last frame time` = 预期时长（**别拿 mdrun 末尾的 `Core t` 当模拟时间**）
+- [ ] 分析前确认三个变体的**盒子 / 力场 / 时间窗口**一致
 
 ---
 
 ## 仓库结构
 
 ```
-├── data/                  ★ 默认不入库（晶体数据未发表，见 data/README.md）
-├── docs/                  方法学与指标判读
-├── pipeline/              五阶段入口脚本
-├── notebooks/             MD_pipeline / ligand_param / Contacts / MMGBSA / MD_metrics*
-├── scripts/               analysis_agent / contacts_agent / mmpbsa_agent / hbond_geometric / install_*
-├── results/               汇总表与图（无原始数据）
-└── legacy/                历史内容归档（FoldX/Rosetta 旧流程）
+├── data/             ★ 空占位：晶体数据未发表，默认不入库（见 data/README.md）
+├── docs/             方法学与指标判读（metrics_guide.md）
+├── pipeline/         五阶段入口脚本
+├── notebooks/        MD_pipeline / ligand_param / Contacts / MMGBSA
+├── scripts/          analysis_agent / contacts_agent / mmpbsa_agent / hbond_geometric / install_*
+├── results/          汇总表与图（不含原始数据）
+└── legacy/           历史归档（FoldX/Rosetta 旧流程）
 ```
 
 ---
 
-## 扩展到自己的体系
+## 局限与不适用场景
 
-1. 把复合物 PDB 放到 `input/`，按 `notebooks/MD_pipeline.ipynb` 的 CONFIG 改变体名与配体 itp 路径
-2. 配体参数化走 `notebooks/ligand_param.ipynb`（共价修饰肽要**整体参数化**，不能拆开）
-3. 跑完把 `ANALYSIS/` 挂在 `scripts/analysis_agent.py` 与 `contacts_agent.py` 上即可得到同样的表与图
+- **不能预测亲和力**：普通 MD + MM/GBSA 只能给结构证据与 ΔΔG 方向。
+- **强依赖起始结构**：起始姿态错，后面全错；建议先用对接/实验结构交叉验证。
+- **隐式溶剂 MM/GBSA 对带电界面误差大**（±3–5 kcal/mol），绝对值不可引用。
+- **短肽柔性大**：取向角这类指标受内部柔性支配，本项目实测 WT 自身涨落 ±35°。
 
 ---
 
-## 引用与许可
+## 许可与商业使用
 
-使用本流水线请注明来源。底层工具：GROMACS (Abraham et al., *SoftwareX* 2015)、
-AmberTools、ACPYPE (Sousa da Silva & Vranken, *BMC Res. Notes* 2012)、OpenBabel。
+本仓库为**评估版**：可自由用于学术研究与非商业验证。
+**商业使用、二次分发、或以本工具提供服务需另行授权**——详见 [`LICENSING.md`](LICENSING.md)。
 
-License: [MIT](LICENSE)
+需要特别说明的**上游许可证约束**（与是否开源无关，属法律强制）：
+
+| 依赖 | 许可证 | 对商业分发的影响 |
+|---|---|---|
+| GROMACS | LGPL-2.1 | 可动态链接分发，需保留许可证与源码获取方式 |
+| AmberTools（antechamber/sqm/MMPBSA） | GPL | **不可**并入闭源产品；应要求用户自行安装 |
+| ACPYPE / OpenBabel | GPL | 同上 |
+
+因此本工具**不打包**上述 GPL 组件，只调用用户环境中的安装。
+
+---
+
+## 引用
+
+使用本工具请注明来源。底层工具：
+GROMACS（Abraham et al., *SoftwareX* 2015）、AmberTools、
+ACPYPE（Sousa da Silva & Vranken, *BMC Res. Notes* 2012）、OpenBabel、PyMOL。
