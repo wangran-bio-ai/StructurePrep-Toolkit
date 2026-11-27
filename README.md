@@ -38,6 +38,7 @@
 | 六变体（WT / Y262A / W282A / E284P / S261E / R279E） | ✅ 各 100 ns 完成 |
 | MM/GBSA | ✅ 六变体（125 帧/变体，50–100 ns） |
 | 逐残基接触 / 芳香笼 / 逐残基分解 | ✅ 六变体 |
+| 结果报告 | ✅ `docs/REPORT.md` + `results/MD_results_summary.pptx` |
 | 结构文件与轨迹 | ❌ **不在仓库内**（未发表数据，见 `data/README.md`） |
 
 ---
@@ -61,9 +62,18 @@ python3 scripts/contacts_agent.py WT Y262A W282A --ref WT
 
 # MM/GBSA：给 ΔΔG 方向
 python3 scripts/mmpbsa_agent.py WT Y262A --ref WT
+
+# 逐残基能量分解（需要 AmberTools 的 MMPBSA.py）
+python3 scripts/amber_decomp.py WT W282A R279E S261E
+
+# 芳香笼 / 盖子几何（环心距、环面夹角、倾角）
+python3 scripts/aromatic_cage.py
+
+# 汇总成一份 Markdown 报告
+python3 scripts/report_agent.py --out REPORT.md
 ```
 
-三个分析脚本都是幂等的：`--reuse` 复用已有结果，秒级出表。
+所有分析脚本都是幂等的：`--reuse` 复用已有结果，秒级出表。
 
 ---
 
@@ -207,12 +217,21 @@ python3 scripts/mmpbsa_agent.py WT Y262A --ref WT
 ## 仓库结构
 
 ```
-├── data/             ★ 空占位：晶体数据未发表，默认不入库（见 data/README.md）
-├── docs/             方法学与指标判读（metrics_guide.md）
-├── pipeline/         五阶段入口脚本
-├── notebooks/        MD_pipeline / ligand_param / Contacts / MMGBSA
-├── scripts/          analysis_agent / contacts_agent / mmpbsa_agent / hbond_geometric / install_*
-├── results/          汇总表与图（不含原始数据）
+├── data/             ★ 空占位：晶体结构与轨迹未发表，默认不入库（见 data/README.md）
+├── docs/             方法学与指标判读（metrics_guide.md、REPORT.md）
+├── pipeline/         五阶段入口脚本（01→05）
+├── notebooks/        MD_pipeline / ligand_param
+│   └── Analysis_notebook/  Contacts / MMGBSA / MD_metrics_{WT,Y262A,W282A,single}
+├── scripts/          analysis_agent / contacts_agent / mmpbsa_agent /
+│                     amber_decomp / aromatic_cage / report_agent /
+│                     hbond_geometric / install_gromacs{,_cuda}.sh
+├── results/          汇总表、图与结果 PPT（不含原始数据）
+│   ├── metrics_w50_100.csv      六变体完整指标（50–100 ns）
+│   ├── comparison_w50_100.csv   相对 WT 的变化
+│   ├── summary_mmpbsa.csv       MM/GBSA 汇总
+│   ├── summary_decomp_*.csv     逐残基能量分解
+│   ├── MD_results_summary.pptx  8 页结果汇报
+│   └── figs/                    5 张结果图（均含六个变体）
 └── legacy/           历史归档（FoldX/Rosetta 旧流程）
 ```
 
@@ -246,6 +265,40 @@ python3 scripts/mmpbsa_agent.py WT Y262A --ref WT
 
 ## 引用
 
-使用本工具请注明来源。底层工具：
-GROMACS（Abraham et al., *SoftwareX* 2015）、AmberTools、
-ACPYPE（Sousa da Silva & Vranken, *BMC Res. Notes* 2012）、OpenBabel、PyMOL。
+如果本流程对你的工作有帮助，请引用本仓库，并注明所依赖的工具：
+
+```bibtex
+@software{StructurePrepToolkit,
+  title  = {StructurePrep-Toolkit: protein-peptide MD preparation and interface analysis},
+  author = {Wang, Ran},
+  year   = {2026},
+  url    = {https://github.com/wangran-bio-ai/StructurePrep-Toolkit}
+}
+```
+
+底层工具：
+- **GROMACS** — Abraham et al., *SoftwareX* 1 (2015) 19–25.
+- **AmberTools / MMPBSA.py** — Case et al.; Miller et al., *J. Chem. Theory Comput.* 8 (2012) 3314.
+- **ACPYPE** — Sousa da Silva & Vranken, *BMC Res. Notes* 5 (2012) 367.
+- **GAFF2** — Wang et al., *J. Comput. Chem.* 25 (2004) 1157; He et al., *J. Comput. Chem.* 41 (2020) 1045.
+- **AM1-BCC** — Jakalian et al., *J. Comput. Chem.* 23 (2002) 1623.
+- **MM/GBSA 综述** — Genheden & Ryde, *Expert Opin. Drug Discov.* 10 (2015) 449.
+- **OpenBabel** — O'Boyle et al., *J. Cheminform.* 3 (2011) 33.
+
+## 数据可用性
+
+晶体结构、MD 轨迹与拓扑（约 100 GB）**未包含在本仓库**，待相关论文发表后按
+[`data/README.md`](data/README.md) 中的步骤解禁。仓库内只保留汇总表、图与脚本。
+
+## 联系与致谢
+
+问题、建议或合作：欢迎在仓库开 Issue。
+致谢 GROMACS、AmberTools、ACPYPE、PyMOL 开发者，以及提供 ITC 数据的实验合作者。
+
+## 更新日志
+
+| 版本 | 内容 |
+|---|---|
+| 2026-11-27 | 结果统一到 50–100 ns 窗口；新增芳香笼几何、逐残基能量分解、自动报告与 8 页 PPT；六变体（含 R279E） |
+| 2026-11-27 | 阈值/权重外置到 `analysis.ini`（公开仓库仅保留模板） |
+| 2026-11-26 | 重构为五阶段流水线；仓库历史重建，移除结构文件与大体积视频 |
