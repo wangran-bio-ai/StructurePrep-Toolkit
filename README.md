@@ -10,7 +10,7 @@
 [![license](https://img.shields.io/badge/license-see%20LICENSING-lightgrey.svg)](LICENSING.md)
 
 <p align="center">
-  <img src="results/figs/contacts_compare.png" width="860">
+  <img src="results/figs/contacts_compare_6variants.png" width="860">
   <br>
   <em>六个变体的逐残基接触占时率。四个点突变都没有"减少"界面接触，而是让多肽沿结合沟槽重排。</em>
 </p>
@@ -86,7 +86,7 @@ python3 scripts/mmpbsa_agent.py WT Y262A --ref WT
 <!-- RESULTS:END -->
 
 <p align="center">
-  <img src="results/figs/comparison_w50_100.png" width="860">
+  <img src="results/figs/comparison_50-100ns.png" width="860">
   <br>
   <em>50–100 ns 窗口：接触数、埋藏面积、候选氢键相对 WT 的变化</em>
 </p>
@@ -107,7 +107,7 @@ python3 scripts/mmpbsa_agent.py WT Y262A --ref WT
 | E284P | 14.66 (−7.2%) | 13 | 0.22 nm | 重排 + 轻度减少 |
 | W282A | 14.48 (−8.3%) | 13 | 0.29 nm | 重排 + 轻度减少 |
 
-<p align="center"><img src="results/figs/peptide_motion.png" width="860"></p>
+<p align="center"><img src="results/figs/peptide_motion_6variants.png" width="860"></p>
 
 **结论**：总量差异仅 0–8%，但逐残基差 Σ|Δ| ≈ 3.6–4.1，质心滑移 <0.3 nm
 → 变化是**界面内接触的重新分配**，不是肽跑掉。
@@ -123,7 +123,7 @@ python3 scripts/mmpbsa_agent.py WT Y262A --ref WT
 | R279E | −53.4 | −63.8 | +78.8 | −7.0 | −45.4 ± 0.6 | −5.2 ± 1.6 |
 | S261E | −46.9 | −141.3 | +144.4 | −6.8 | −50.6 ± 0.9 | −10.3 ± 1.7 |
 
-<p align="center"><img src="results/figs/mmpbsa_bar.png" width="720"></p>
+<p align="center"><img src="results/figs/mmpbsa_bar_6variants.png" width="720"></p>
 
 - **只有 W282A 超出噪声**（|ΔΔG| > 3 kcal/mol），且 ΔVDW 少 11.9 kcal/mol——对应芳香笼盖子的丢失
 - S261E 的 ΔEEL/ΔEGB 是其他变体的近 3 倍（−141/+144），属电荷-去溶剂化抵消，**不能读作变强**
@@ -139,7 +139,7 @@ python3 scripts/mmpbsa_agent.py WT Y262A --ref WT
 | S261E | 5.41 ± 0.69 Å | 26° | 同上 |
 | W282A | 5.20 Å（CA 代替） | — | 笼子解散 |
 
-<p align="center"><img src="results/figs/cage_geometry.png" width="860"></p>
+<p align="center"><img src="results/figs/cage_geometry_6variants.png" width="860"></p>
 
 ### 5 结构、能量与实验的关系
 
