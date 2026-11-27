@@ -26,6 +26,10 @@ import time
 
 import numpy as np
 
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from spconfig import cfg as CFG
+
 B = "/root/autodl-tmp/GROMACS"
 GMX = "/root/gromacs_cuda/bin/gmx"
 AMBER_ENV = "/root/autodl-tmp/mmpbsa"
@@ -126,12 +130,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("variants", nargs="*", default=["WT"])
     ap.add_argument("--ref", default="WT")
-    ap.add_argument("--window", nargs=2, type=float, default=[50, 100])
-    ap.add_argument("--frames", type=int, default=125)
-    ap.add_argument("--dt", type=float, default=200.0, help="抽帧间隔 ps")
-    ap.add_argument("--method", choices=["gb", "pb"], default="gb")
-    ap.add_argument("--salt", type=float, default=0.15)
-    ap.add_argument("--igb", type=int, default=5)
+    ap.add_argument("--window", nargs=2, type=float,
+                default=[CFG.getfloat("mmpbsa", "window_start_ns", 50),
+                         CFG.getfloat("mmpbsa", "window_end_ns", 100)])
+    ap.add_argument("--frames", type=int, default=CFG.getint("mmpbsa", "frames", 125))
+    ap.add_argument("--dt", type=float, default=CFG.getfloat("mmpbsa", "dt_ps", 200.0), help="picking interval ps")
+    ap.add_argument("--method", choices=["gb", "pb"], default=CFG.get("mmpbsa", "method", "gb"))
+    ap.add_argument("--salt", type=float, default=CFG.getfloat("mmpbsa", "salt", 0.15))
+    ap.add_argument("--igb", type=int, default=CFG.getint("mmpbsa", "igb", 5))
     ap.add_argument("--reuse", action="store_true")
     a = ap.parse_args()
 

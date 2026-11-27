@@ -24,6 +24,10 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from spconfig import cfg as CFG
+
 B = "/root/autodl-tmp/GROMACS"
 GMX = "/root/gromacs_cuda/bin/gmx"
 
@@ -87,7 +91,8 @@ def coords(v):
     return arr[:, 0] / 1000.0, arr[:, 1:].reshape(len(arr), -1, 3)
 
 
-def analyze(v, cut=0.4):
+def analyze(v, cut=None):
+    cut = CFG.getfloat("contacts", "cutoff_nm", 0.4) if cut is None else cut
     prot = residue_map(v)
     t, X = coords(v)
     nprot = sum(r[2] for r in prot)
@@ -165,7 +170,7 @@ def main():
         rows.append({
             "variant": v,
             "sum_occupancy": occ[v].occupancy.sum(),
-            "n_core_residues": int((occ[v].occupancy > 0.5).sum()),
+            "n_core_residues": int((occ[v].occupancy > CFG.getfloat("contacts", "core_occupancy", 0.5)).sum()),
             "mean_com_disp_nm": mot[v].com_disp_nm.mean(),
             "mean_abs_angle_deg": float(np.abs(mot[v].axis_angle_deg).mean()),
             "d_sum_occupancy_vs_ref": occ[v].occupancy.sum() - occ[ref].occupancy.sum(),

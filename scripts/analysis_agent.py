@@ -27,17 +27,23 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+from spconfig import cfg as CFG
+
 BASE = "/root/autodl-tmp/GROMACS"
 AN = f"{BASE}/ANALYSIS"
 GMX_CANDS = ["/root/gromacs_cuda/bin/gmx",
              "/root/gromacs_cuda_244/bin/gmx",
              "/root/autodl-tmp/md/bin/gmx"]
-PBC_CUT = 2.0          # nm，肽位移超过它视为 PBC 跳变
-TRIM_NS = 50.0         # 默认分析窗口终点（ns）：WT 100 ns、突变体 50 ns，统一截到 0–50 ns
+PBC_CUT = CFG.getfloat("window", "pbc_outlier_nm", 2.0)   # nm，肽位移超过它视为 PBC 跳变
+TRIM_NS = CFG.getfloat("window", "trim_ns", 50.0)        # 默认分析窗口终点（ns）
 TRIM_FROM = 0.0        # 窗口起点（ns）。>0 时输出到带后缀的目录，且不参与跨变体对比
 TRIM_TO = TRIM_NS
 DEFAULT_VARS = ["WT", "Y262A", "W282A"]
 REF = "WT"
+CONTACT_CUT = CFG.getfloat("contacts", "cutoff_nm", 0.4)
+POLAR_CUT   = CFG.getfloat("hbonds", "polar_cutoff_nm", 0.35)
 
 
 def tw():
@@ -143,7 +149,7 @@ def analyze(v, reuse=False):
 
     # 2) 接触 + 最小距离 + 肽位移
     if need("ncontacts"):
-        run(["mindist", "-s", TPR, "-f", XTC, "-n", IDX, "-d", "0.4",
+        run(["mindist", "-s", TPR, "-f", XTC, "-n", IDX, "-d", str(CONTACT_CUT),
              "-od", f"{OUT}/xvg/mindist_peb.xvg", "-on", f"{OUT}/xvg/ncontacts.xvg"] + tw(),
             stdin_text=f"{G['Protein']}\n{G['PEB']}\n", log=f"{OUT}/logs/mindist.log")
     if need("rmsd_peb"):
@@ -173,7 +179,7 @@ def analyze(v, reuse=False):
         with open(ndx, "w") as f:
             f.write("[ Prot_polar ]\n" + " ".join(map(str, prot_idx)) + "\n")
             f.write("[ PEB_polar ]\n" + " ".join(map(str, peb_idx)) + "\n")
-        run(["mindist", "-s", TPR, "-f", XTC, "-n", ndx, "-d", "0.35", "-dt", "0.1",
+        run(["mindist", "-s", TPR, "-f", XTC, "-n", ndx, "-d", str(POLAR_CUT), "-dt", "0.1",
              "-od", f"{OUT}/xvg/polar_mindist.xvg", "-on", f"{OUT}/xvg/polar_pairs.xvg"] + tw(),
             stdin_text="0\n1\n", log=f"{OUT}/logs/polar.log")
 
@@ -240,9 +246,12 @@ def compare(rows):
             "d_pep_shift_nm": df.pep_rmsd_median_nm - r0.pep_rmsd_median_nm,
         })
         # 界面完整性：三项保留率平均（越接近 100% 越"没被破坏"）
-        keep = (df.n_contacts_mean / r0.n_contacts_mean +
-                df.candidate_hbonds_mean / r0.candidate_hbonds_mean +
-                df.buried_sasa_mean_nm2 / r0.buried_sasa_mean_nm2) / 3 * 100
+        w_c = CFG.getfloat("integrity", "weight_contacts", 1.0)
+        w_h = CFG.getfloat("integrity", "weight_hbonds", 1.0)
+        w_s = CFG.getfloat("integrity", "weight_sasa", 1.0)
+        keep = (w_c * df.n_contacts_mean / r0.n_contacts_mean +
+                w_h * df.candidate_hbonds_mean / r0.candidate_hbonds_mean +
+                w_s * df.buried_sasa_mean_nm2 / r0.buried_sasa_mean_nm2) / (w_c + w_h + w_s) * 100
         rank["interface_integrity_pct"] = keep
         rank = rank.sort_values("interface_integrity_pct")
         rank.to_csv(f"{cmp_dir}/ranking.csv", index=False)
