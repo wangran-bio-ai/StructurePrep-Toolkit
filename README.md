@@ -12,7 +12,7 @@
 <p align="center">
   <img src="results/figs/contacts_compare.png" width="860">
   <br>
-  <em>五个变体的逐残基接触占时率。四个点突变都没有"减少"界面接触，而是让多肽沿结合沟槽重排。</em>
+  <em>六个变体的逐残基接触占时率。四个点突变都没有"减少"界面接触，而是让多肽沿结合沟槽重排。</em>
 </p>
 
 </div>
