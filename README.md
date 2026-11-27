@@ -139,6 +139,8 @@ python3 scripts/mmpbsa_agent.py WT Y262A --ref WT
 | S261E | 5.41 ± 0.69 Å | 26° | 同上 |
 | W282A | 5.20 Å（CA 代替） | — | 笼子解散 |
 
+<p align="center"><img src="results/figs/cage_geometry.png" width="860"></p>
+
 ### 5 结构、能量与实验的关系
 
 | 层面 | 观察到 | 说明 |
